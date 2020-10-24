@@ -142,6 +142,12 @@ public class Controller implements Initializable {
                                     }
                                 });
                             }
+                            if (str.startsWith("/chnickok")){
+                                textArea.appendText("Ник успешно сменен");
+                            }
+                            if (str.startsWith("/chnickno")){
+                                textArea.appendText("Не удалось сменить ник");
+                            }
                         } else {
                             textArea.appendText(str + "\n");
                         }

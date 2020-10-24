@@ -84,6 +84,18 @@ public class ClientHandler {
                                 }
                                 server.privateMsg(this, token[1], token[2]);
                             }
+                            if (str.startsWith("/chnick")){
+                                String[] token = str.split("\\s", 2);
+                                if (token.length < 2) {
+                                    continue;
+                                }
+                                boolean answer = server.getAuthService().changeNick(nickname, token[1]);
+                                if (answer){
+                                    sendMsg("/chnickok");
+                                } else {
+                                    sendMsg("/chnickno");
+                                }
+                            }
                         } else {
                             server.broadcastMsg(this, str);
                         }
