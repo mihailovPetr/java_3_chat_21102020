@@ -52,6 +52,8 @@ public class Controller implements Initializable {
 
     private boolean authenticated;
     private String nickname;
+    private String login;
+    private HistoryService history;
 
     private void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
@@ -107,6 +109,8 @@ public class Controller implements Initializable {
                         if (str.startsWith("/authok ")) {
                             nickname = str.split("\\s")[1];
                             setAuthenticated(true);
+                            history = new FileHistoryService(login);
+                            textArea.appendText(history.readMsgs(100));
                             break;
                         }
 
@@ -150,6 +154,7 @@ public class Controller implements Initializable {
                             }
                         } else {
                             textArea.appendText(str + "\n");
+                            history.writeMsg(str);
                         }
                     }
                 } catch (RuntimeException e) {
@@ -158,6 +163,7 @@ public class Controller implements Initializable {
                     e.printStackTrace();
                 } finally {
                     setAuthenticated(false);
+                    history.close();
                     try {
                         socket.close();
                         in.close();
@@ -187,6 +193,7 @@ public class Controller implements Initializable {
     }
 
     public void tryToAuth(ActionEvent actionEvent) {
+        login = loginField.getText().trim();
         if (socket == null || socket.isClosed()) {
             connect();
         }
