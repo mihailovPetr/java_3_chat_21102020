@@ -1,16 +1,26 @@
 package server;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.*;
 
 public class Server {
     private List<ClientHandler> clients;
     private AuthService authService;
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
 
     public Server() {
+        LogManager manager = LogManager.getLogManager();
+        try {
+            manager.readConfiguration(new FileInputStream("server/logging.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         clients = new CopyOnWriteArrayList<>();
         authService = new DBAuthService();
         ServerSocket server = null;
@@ -19,7 +29,8 @@ public class Server {
 
         try {
             server = new ServerSocket(PORT);
-            System.out.println("Server started");
+            logger.log(Level.INFO,"Server started");
+//            System.out.println("Server started");
 
             while (true) {
                 socket = server.accept();
@@ -28,6 +39,7 @@ public class Server {
 
         } catch (IOException e) {
             e.printStackTrace();
+            logger.log(Level.SEVERE, e.toString());
         } finally {
             try {
                 socket.close();
@@ -39,6 +51,7 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            logger.log(Level.INFO,"Server stopped");
         }
     }
 

@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientHandler {
     DataInputStream in;
@@ -14,6 +16,7 @@ public class ClientHandler {
 
     private String nickname;
     private String login;
+    private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
     public ClientHandler(Server server, Socket socket) {
         try {
@@ -21,7 +24,8 @@ public class ClientHandler {
             this.socket = socket;
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
-            System.out.println("Client connected " + socket.getRemoteSocketAddress());
+            logger.log(Level.INFO, "Client connected " + socket.getRemoteSocketAddress());
+//            System.out.println("Client connected " + socket.getRemoteSocketAddress());
 
             new Thread(() -> {
                 try {
@@ -103,12 +107,14 @@ public class ClientHandler {
 
                 } catch (SocketTimeoutException e) {
                     sendMsg("/end");
-                    System.out.println("Client disconnected by timeout");
+//                    System.out.println("Client disconnected by timeout");
+                    logger.log(Level.INFO, "Client " + socket.getRemoteSocketAddress() + "disconnected by timeout");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } finally {
                     server.unsubscribe(this);
-                    System.out.println("Client disconnected " + socket.getRemoteSocketAddress());
+//                    System.out.println("Client disconnected " + socket.getRemoteSocketAddress());
+                    logger.log(Level.INFO, "Client disconnected " + socket.getRemoteSocketAddress());
                     try {
                         socket.close();
                         in.close();
